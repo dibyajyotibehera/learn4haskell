@@ -211,7 +211,7 @@ ghci> :q
 --
 -- A pair of boolean and char:
 -- >>> :t (True, 'x')
--- (True,'x') :: (Bool, Char)
+-- (True, 'x') :: (Bool, Char)
 --
 -- Boolean negation:
 -- >>> :t not
@@ -311,10 +311,10 @@ ghci> :q
 -- True
 --
 -- >>> 2 ^ 10  -- power
--- <INSERT THE RESULT INSTEAD OF THE TEXT>
+-- 1024
 --
 -- >>> not False
--- 1024
+-- True
 --
 -- >>> div 20 3  -- integral division
 -- 6
@@ -502,7 +502,10 @@ lastDigit n = mod n 10
 -- 👩‍🔬 Due to lazy evaluation in Haskell, only the expression from the branch
 --   satisfying the check will be returned and, therefore, evaluated.
 closestToZero :: Int -> Int -> Int
-closestToZero x y = max x y
+closestToZero x y =
+  let m1 = abs x
+      m2 = abs y
+   in min m1 m2
 
 -- |
 -- =⚔️= Task 7
@@ -614,13 +617,12 @@ isVowel c
 --
 -- Try to introduce variables in this task (either with let-in or where) to avoid
 -- specifying complex expressions.
-sumLast2 :: Int -> Int 
+sumLast2 :: Int -> Int
 sumLast2 n =
-   let last1 = mod n 10
-       a = div n 10
-       last2 = mod a 10
+  let last1 = mod n 10
+      a = div n 10
+      last2 = mod a 10
    in last1 + last2
-
 
 -- |
 -- =💣= Task 10*
@@ -638,10 +640,10 @@ sumLast2 n =
 --
 -- You need to use recursion in this task. Feel free to return to it later, if you
 -- aren't ready for this boss yet!
-firstDigit :: Int -> Int 
+firstDigit :: Int -> Int
 firstDigit n
   | n < 10 = n
-  | otherwise = firstDigit(div n 10)
+  | otherwise = firstDigit (div n 10)
 
 {-
 You did it! Now it is time to open a pull request with your changes
