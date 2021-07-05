@@ -474,7 +474,7 @@ next x = x + 1
 
 -- DON'T FORGET TO SPECIFY THE TYPE IN HERE
 lastDigit :: Int -> Int
-lastDigit n = mod n 10
+lastDigit n = mod (abs n) 10
 
 -- |
 -- =⚔️= Task 6
@@ -505,7 +505,8 @@ closestToZero :: Int -> Int -> Int
 closestToZero x y =
   let m1 = abs x
       m2 = abs y
-   in min m1 m2
+      ans = if m1 < m2 then x else y
+   in ans
 
 -- |
 -- =⚔️= Task 7
@@ -538,9 +539,9 @@ closestToZero x y =
 -- Casual reminder about adding top-level type signatures for all functions :)
 mid :: Int -> Int -> Int -> Int
 mid x y z
-  | ((x < y) && (x > z)) || ((x < z) && (x > y)) = x
-  | ((y < x) && (y > z)) || ((y > x) && (y < z)) = y
-  | ((z < y) && (z > x)) || ((z < x) && (z > y)) = z
+  | ((x <= y) && (x >= z)) || ((x <= z) && (x >= y)) = x
+  | ((y <= x) && (y >= z)) || ((y >= x) && (y <= z)) = y
+  | ((z <= y) && (z >= x)) || ((z <= x) && (z >= y)) = z
   | otherwise = error "something wrong"
 
 -- |
@@ -619,8 +620,8 @@ isVowel c
 -- specifying complex expressions.
 sumLast2 :: Int -> Int
 sumLast2 n =
-  let last1 = mod n 10
-      a = div n 10
+  let last1 = mod (abs n) 10
+      a = div (abs n) 10
       last2 = mod a 10
    in last1 + last2
 
