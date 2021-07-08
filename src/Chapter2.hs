@@ -631,7 +631,22 @@ Write a function that takes elements of a list only in even positions.
 >>> takeEven [2, 1, 3, 5, 4]
 [2,3,4]
 -}
-takeEven = error "takeEven: Not implemented!"
+
+
+
+takeEven :: [a] -> [a]
+takeEven xs =
+  go 0 [] xs
+  where
+    go :: Int->[a]->[a]->[a]
+    go _ ys [] = ys
+    go n ys (z:zs) = 
+      if mod n 2 == 0 
+        then 
+           go (n+1) (ys ++ [z]) zs 
+        else go (n+1) ys zs
+
+
 
 {- |
 =🛡= Higher-order functions
@@ -738,7 +753,8 @@ value of the element itself
 🕯 HINT: Use combination of 'map' and 'replicate'
 -}
 smartReplicate :: [Int] -> [Int]
-smartReplicate l = error "smartReplicate: Not implemented!"
+smartReplicate [] = []
+smartReplicate (x:xs) = replicate x x ++ smartReplicate xs
 
 {- |
 =⚔️= Task 9
@@ -751,7 +767,12 @@ the list with only those lists that contain a passed element.
 
 🕯 HINT: Use the 'elem' function to check whether an element belongs to a list
 -}
-contains = error "contains: Not implemented!"
+contains:: Eq a => a->[[a]]->[[a]]
+contains _ []= [] 
+contains n (x:xs) = 
+  if (elem n x) == True
+    then x:contains n xs
+    else contains n xs
 
 
 {- |
@@ -791,13 +812,15 @@ Let's now try to eta-reduce some of the functions and ensure that we
 mastered the skill of eta-reducing.
 -}
 divideTenBy :: Int -> Int
-divideTenBy x = div 10 x
+divideTenBy  = div 10 
 
 -- TODO: type ;)
-listElementsLessThan x l = filter (< x) l
+listElementsLessThan :: Ord a=> a->[a] -> [a]
+listElementsLessThan x  = filter (< x) 
 
 -- Can you eta-reduce this one???
-pairMul xs ys = zipWith (*) xs ys
+pairMul :: [Int]->[Int]->[Int]
+pairMul  = zipWith (*) 
 
 {- |
 =🛡= Lazy evaluation
@@ -852,7 +875,13 @@ list.
 
 🕯 HINT: Use the 'cycle' function
 -}
-rotate = error "rotate: Not implemented!"
+rotate :: Int->[a]->[a]
+rotate _ [] = []
+rotate n xs =
+  if n < 0
+     then []
+     else drop n (take (n + length xs) (cycle xs))
+
 
 {- |
 =💣= Task 12*
@@ -868,7 +897,11 @@ and reverses it.
   function, but in this task, you need to implement it manually. No
   cheating!
 -}
-rewind = error "rewind: Not Implemented!"
+rewind :: [a] -> [a]
+rewind [] = []
+rewind [x] = [x]
+rewind (x:xs) = rewind xs ++ [x] 
+
 
 
 {-
