@@ -343,7 +343,10 @@ Define the Book product data type. You can take inspiration from our description
 of a book, but you are not limited only by the book properties we described.
 Create your own book type of your dreams!
 -}
-
+data Book = Book {
+  name :: String,
+  author :: String
+}
 {- |
 =⚔️= Task 2
 
@@ -373,6 +376,26 @@ after the fight. The battle has the following possible outcomes:
    doesn't earn any money and keeps what they had before.
 
 -}
+
+data Knight = Knight {
+  knightHealth :: Int,
+  knighAttack :: Int,
+  knightGold :: Int
+}
+
+data Monster = Monster{
+  monsterHealth :: Int,
+  mosterAttack :: Int,
+  monsterGold :: Int
+}
+
+fight :: Knight -> Monster -> Int
+fight k m
+  | knighAttack k > monsterHealth m = knightGold k + monsterGold m
+  | mosterAttack m > knightHealth k = -1
+  | otherwise = knightGold k
+
+
 
 {- |
 =🛡= Sum types
@@ -459,7 +482,7 @@ and provide more flexibility when working with data types.
 Create a simple enumeration for the meal types (e.g. breakfast). The one who
 comes up with the most number of names wins the challenge. Use your creativity!
 -}
-
+data Meal = Breakfast | Lunch | Dinner
 {- |
 =⚔️= Task 4
 
@@ -561,21 +584,28 @@ introducing extra newtypes.
     implementation of the "hitPlayer" function at all!
 -}
 data Player = Player
-    { playerHealth    :: Int
-    , playerArmor     :: Int
-    , playerAttack    :: Int
-    , playerDexterity :: Int
-    , playerStrength  :: Int
+    { playerHealth    :: PlayerHealth
+    , playerArmor     :: PlayerArmor
+    , playerAttack    :: PlayerAttack
+    , playerDexterity :: PlayerDexterity
+    , playerStrength  :: PlayerStrength
     }
+newtype PlayerHealth = PlayerHealth {healthValue :: Int}
+newtype PlayerArmor = PlayerArmor {armorValue :: Int}
+newtype PlayerAttack = PlayerAttack {attackvalue :: Int}
+newtype PlayerDexterity = PlayerDexterity {dexterityValue :: Int}
+newtype PlayerStrength = PlayerStrength {strengthValue :: Int}
+newtype PlayerDamage = PlayerDamage {damageValue :: Int}
+newtype PlayerDefense = PlayerDefense {defenceValue :: Int}
 
-calculatePlayerDamage :: Int -> Int -> Int
-calculatePlayerDamage attack strength = attack + strength
+calculatePlayerDamage :: PlayerAttack -> PlayerStrength -> PlayerDamage
+calculatePlayerDamage attack strength = PlayerDamage {damageValue = attackvalue attack + strengthValue strength}
 
-calculatePlayerDefense :: Int -> Int -> Int
-calculatePlayerDefense armor dexterity = armor * dexterity
+calculatePlayerDefense :: PlayerArmor -> PlayerDexterity -> PlayerDefense
+calculatePlayerDefense armor dexterity = PlayerDefense {defenceValue = armorValue armor * dexterityValue dexterity}
 
-calculatePlayerHit :: Int -> Int -> Int -> Int
-calculatePlayerHit damage defense health = health + defense - damage
+calculatePlayerHit :: PlayerDamage -> PlayerDefense -> PlayerHealth -> PlayerHealth
+calculatePlayerHit damage defense health = PlayerHealth  {healthValue = healthValue health + defenceValue defense - damageValue damage}
 
 -- The second player hits first player and the new first player is returned
 hitPlayer :: Player -> Player -> Player
@@ -753,6 +783,20 @@ parametrise data types in places where values can be of any general type.
   maybe-treasure ;)
 -}
 
+data TreasureChest x = TreasureChest
+  { treasureChestGold :: Int,
+    treasureChestLoot :: x
+  }
+
+data Dragon x = Dragon
+  { magicPower :: x,
+    dragonname::String
+  }
+
+data Lair g p = Lair
+  { chest :: Maybe (TreasureChest g),
+    dragon :: Dragon p
+  }
 {-
 =🛡= Typeclasses
 
@@ -872,7 +916,7 @@ Interestingly, it is possible to reuse existing instances of data types in the
 same typeclass instances as well. And we also can reuse the __constraints__ in
 the instance declaration for that!
 
-This gives us the ability to specify the instances for polymorphic data types
+This gives us the ability to specify the instances for **** polymorphic data types *****
 with some conditions (constraints).
 
 Let's see it in the example of the 'ArchEnemy' typeclass instance for the
@@ -909,6 +953,19 @@ Implement instances of "Append" for the following types:
 -}
 class Append a where
     append :: a -> a -> a
+
+newtype Gold = Gold {goldValue::Int}
+instance Append Gold where
+  append g1 g2 = Gold {goldValue= goldValue g1 + goldValue g2}
+
+instance Append [a] where
+  append a1 a2 = a1 ++ a2
+
+instance (Append a) => Append (Maybe a) where
+  append :: Maybe a -> Maybe a -> Maybe a
+  append m1 Nothing = m1
+  append Nothing m2 = m2
+  append (Just m1)  (Just m2) = Just $ append m1 m2
 
 
 {-
@@ -970,6 +1027,20 @@ implement the following functions:
 
 🕯 HINT: to implement this task, derive some standard typeclasses
 -}
+data WeekDay = Monday | Tuesday | Wednesday | Thursday | Friday | Saturday | Sunday
+               deriving (Enum , Eq, Show) 
+
+isWeekend :: WeekDay -> Bool 
+isWeekend wd = wd == Saturday || wd == Sunday
+
+nextDay :: WeekDay -> WeekDay
+nextDay Sunday = Monday
+nextDay w = succ  w
+
+daysToParty :: WeekDay -> Int
+daysToParty w = if fromEnum Friday >= fromEnum w
+  then fromEnum Friday - fromEnum w
+  else 7 - (fromEnum w - fromEnum Friday)
 
 {-
 =💣= Task 9*
@@ -1005,6 +1076,26 @@ properties using typeclasses, but they are different data types in the end.
 Implement data types and typeclasses, describing such a battle between two
 contestants, and write a function that decides the outcome of a fight!
 -}
+data FighterKnight = FighterKnight {
+  fkHealth :: Int,
+  fkAttack :: Int,
+  fkdefence :: Int,
+  fkactionIndx :: Int,
+  fkactions :: [KnightActions]
+}
+
+data FighterMonster = FighterMonster {
+  fmHealth :: Int,
+  fmAttack :: Int,
+  fmactionIdx :: Int,
+  fmactions :: [MonsterActions]
+}
+
+data KnightActions = Attack | DrinkPotion | CastSpell
+data MonsterActions = Fight | Run
+
+class Fighter f where
+  performNextAction :: f->f-> Int
 
 
 {-
